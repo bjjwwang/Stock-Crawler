@@ -55,6 +55,7 @@ us_rows = get_us_equity_kline(
 Both functions return a list of dictionaries using the shared `KLINE_SCHEMA`. Columns are normalized to English
 keys and dates are stringified for consistency.
 
+
 ### 60-minute Keltner Channel (薛斯通道)
 1. Fetch 60-minute bars using the intraday helpers:
    ```python
@@ -81,6 +82,7 @@ keys and dates are stringified for consistency.
 
 The `compute_keltner_channels` helper returns the original OHLCV fields plus `middle`, `atr`, `upper`, and
 `lower` values for each timestamp so you can chart or further analyze the time series.
+
 
 ## Notes
 - The helpers intentionally reject common derivative markers (e.g., indices or warrants). Provide common stock
