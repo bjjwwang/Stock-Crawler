@@ -24,6 +24,16 @@ def _normalize_date(value: date | str) -> str:
 
 
 def _records_from_dataframe(df: pd.DataFrame, column_map: dict[str, str]) -> list[dict[str, float | str]]:
+    if df is None or df.empty:
+        return []
+
+    missing = [col for col in column_map if col not in df.columns]
+    if missing:
+        raise ValueError(
+            "Upstream data is missing expected columns: "
+            f"{missing}. Available columns: {list(df.columns)}"
+        )
+
     renamed = df.rename(columns=column_map)
     renamed = renamed[list(column_map.values())]
     renamed[KLINE_SCHEMA[0]] = renamed[KLINE_SCHEMA[0]].astype(str)
@@ -124,6 +134,9 @@ def get_cn_equity_intraday_kline(
     }
 
     records = _records_from_dataframe(raw, column_map)
+    if not records:
+        return []
+
     df = _ensure_sorted_by_date(_to_dataframe(records))
 
     if start:

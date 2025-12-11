@@ -88,3 +88,6 @@ The `compute_keltner_channels` helper returns the original OHLCV fields plus `mi
 - The helpers intentionally reject common derivative markers (e.g., indices or warrants). Provide common stock
   tickers only.
 - Network connectivity is required to retrieve data from the upstream APIs.
+- Intraday endpoints sometimes return no rows for suspended/delisted tickers or during maintenance windows.
+  When that happens the helpers return an empty list so callers can handle the scenario gracefully (see the
+  intraday demo logic).
