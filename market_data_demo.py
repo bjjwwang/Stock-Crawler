@@ -1,9 +1,4 @@
-"""Quick smoke test for the ``market_data`` helpers.
-
-Run inside an activated backend virtualenv after installing ``requirements.txt``:
-
-    python backend/examples/market_data_demo.py
-"""
+"""Quick smoke test for the ``market_data`` helpers."""
 
 from datetime import date
 
@@ -24,6 +19,21 @@ def demo_cn():
     print()
 
 
+def demo_cn_intraday_keltner():
+    print("CN A-share (贵州茅台 600519) — 60m Keltner Channel")
+    rows = market_data.get_cn_equity_intraday_kline(
+        symbol="600519",
+        start=date(2023, 1, 3),
+        end=date(2023, 1, 10),
+        adjust="qfq",
+        period="60",
+    )
+    keltner = market_data.compute_keltner_channels(rows, window=20, atr_multiplier=2.0)
+    print(f"Rows fetched: {len(keltner)}")
+    print(f"Most recent row: {keltner[-1] if keltner else 'N/A'}")
+    print()
+
+
 def demo_us():
     print("US equity (AAPL) — daily, regular hours")
     rows = market_data.get_us_equity_kline(
@@ -41,6 +51,7 @@ def demo_us():
 def main():
     demo_cn()
     demo_us()
+    demo_cn_intraday_keltner()
 
 
 if __name__ == "__main__":

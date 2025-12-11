@@ -11,7 +11,7 @@ standardized records for downstream processing.
 
 ## Project Structure
 - `market_data.py`: Core helpers for fetching and normalizing data from Akshare (CN) and Yahoo Finance (US).
-- `market_data_demo.py`: Simple script showing how to call the helpers for both markets.
+- `market_data_demo.py`: Simple script showing how to call the helpers for both markets, including 60m Keltner Channel output.
 - `requirements.txt`: Runtime dependencies.
 
 ## Installation
@@ -54,6 +54,35 @@ us_rows = get_us_equity_kline(
 
 Both functions return a list of dictionaries using the shared `KLINE_SCHEMA`. Columns are normalized to English
 keys and dates are stringified for consistency.
+
+
+### 60-minute Keltner Channel (薛斯通道)
+1. Fetch 60-minute bars using the intraday helpers:
+   ```python
+   from market_data import get_cn_equity_intraday_kline
+
+   sixty_min_rows = get_cn_equity_intraday_kline(
+       symbol="600519",
+       start="2023-01-03",
+       end="2023-01-10",
+       period="60",  # 60-minute bars
+       adjust="qfq",
+   )
+   ```
+   For U.S. tickers, use `get_us_equity_intraday_kline` with `interval="60m"`.
+
+2. Compute the Keltner Channel series:
+   ```python
+   from market_data import compute_keltner_channels
+
+   keltner_rows = compute_keltner_channels(sixty_min_rows, window=20, atr_multiplier=2.0)
+   latest = keltner_rows[-1]
+   print(latest["date"], latest["middle"], latest["upper"], latest["lower"], latest["atr"])
+   ```
+
+The `compute_keltner_channels` helper returns the original OHLCV fields plus `middle`, `atr`, `upper`, and
+`lower` values for each timestamp so you can chart or further analyze the time series.
+
 
 ## Notes
 - The helpers intentionally reject common derivative markers (e.g., indices or warrants). Provide common stock
